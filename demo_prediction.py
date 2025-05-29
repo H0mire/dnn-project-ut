@@ -7,7 +7,7 @@ from ultrasound_classifier import ShallowCNN, HandcraftedFeatureExtractor
 import os
 
 
-def predict_single_image(model_path, image_path, class_names=['bladder', 'kidney']):
+def predict_single_image(model_path, image_path, class_names):
     """
     Predict the class of a single ultrasound image
     
@@ -125,7 +125,7 @@ def demo_predictions():
     print("\nDemo complete!")
 
 
-def predict_new_image(image_path):
+def predict_new_image(image_path, class_names):
     """
     Predict the class of a new image provided by the user
     
@@ -146,7 +146,7 @@ def predict_new_image(image_path):
     print(f"Analyzing image: {image_path}")
     
     # Make prediction
-    predicted_class, confidence = predict_single_image(model_path, image_path)
+    predicted_class, confidence = predict_single_image(model_path, image_path, class_names)
     
     print(f"Predicted organ: {predicted_class}")
     print(f"Confidence: {confidence:.4f} ({confidence*100:.1f}%)")
@@ -158,11 +158,13 @@ def predict_new_image(image_path):
 
 if __name__ == "__main__":
     import sys
+
+    class_names = ['bladder', 'kidney', 'liver', 'gallbladder', 'spleen', 'bowel']
     
     if len(sys.argv) > 1:
         # If an image path is provided as argument, predict that image
         image_path = sys.argv[1]
-        predict_new_image(image_path)
+        predict_new_image(image_path, class_names)
     else:
         # Otherwise, run the demo on test images
         demo_predictions() 

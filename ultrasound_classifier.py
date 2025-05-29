@@ -413,6 +413,8 @@ def plot_training_history(train_losses, val_losses, val_accuracies):
 
 
 def main():
+
+    class_names = ['bladder', 'kidney', 'liver', 'gallbladder', 'spleen', 'bowel']
     # Set random seeds for reproducibility
     np.random.seed(42)
     torch.manual_seed(42)
@@ -420,7 +422,7 @@ def main():
     # Load data
     print("Loading data...")
     data_dir = './datasets/img'
-    X_train_paths, y_train, X_test_paths, y_test = load_data(data_dir)
+    X_train_paths, y_train, X_test_paths, y_test = load_data(data_dir, classes=class_names)
     
     # Create validation set from training data
     X_train_paths, X_val_paths, y_train, y_val = train_test_split(
@@ -456,7 +458,7 @@ def main():
     
     # Initialize model
     print("\nInitializing model...")
-    model = ShallowCNN(num_classes=2)
+    model = ShallowCNN(num_classes=len(class_names))
     
     # Train model
     print("\nTraining model...")
@@ -469,7 +471,7 @@ def main():
     
     # Evaluate on test set
     print("\nEvaluating on test set...")
-    class_names = ['bladder', 'kidney']
+    class_names = class_names
     evaluate_model(model, test_loader, class_names)
     
     # Save model
