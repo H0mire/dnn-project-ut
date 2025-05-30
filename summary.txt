@@ -1,0 +1,58 @@
+Ultrasound Image Classification - Summary Report
+=================================================
+
+Project Description:
+--------------------
+This project implements a convolutional neural network (CNN) based classifier 
+for ultrasound images to distinguish between six different organ classes: 
+bladder, bowel, gallbladder, kidney, liver, and spleen.
+
+Model:
+------
+- Architecture: MiniVGGNet
+- Structure:
+  - Two convolutional blocks with 2 Conv layers each
+  - Batch Normalization and ReLU activations
+  - MaxPooling layers
+  - Adaptive Average Pooling
+  - Fully connected classifier with Dropout regularization
+
+Dataset:
+--------
+- Training set: 50 images per class
+- Test set: 10 images per class
+- Total classes: 6
+
+Training Details:
+-----------------
+- Optimizer: Adam
+- Loss Function: CrossEntropyLoss
+- Batch size: 8
+- Epochs: 30
+- Data Augmentation: Random flips, rotations, etc.
+
+Performance:
+------------
+- Training Accuracy: ~97%
+- Best Validation Accuracy: 100%
+- Test Accuracy: 93.3%
+- Macro Average F1-Score: 0.93
+
+Confusion Matrix:
+-----------------
+The model performed well across all classes with minimal confusion, 
+achieving perfect classification in multiple classes.
+
+Conclusion
+
+This project demonstrates that a small custom CNN like MiniVGGNet can achieve excellent 
+classification performance on a small medical imaging dataset.No pretrained models were used, 
+making the system lightweight and suitable for deployment or extension to larger datasets 
+in the future.
+
+Saved Files:
+------------
+- Model Weights: `ultrasound_cnn.pth`
+- Training History: `my_training_history.npz`
+- Confusion Matrix: `my_confusion_matrix.pkl`
+- Classification Report: `my_classification_report.json`
