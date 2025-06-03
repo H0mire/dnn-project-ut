@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ultrasound Model Evaluation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #fafafa; }
+        h1 { color: #2c3e50; }
+        .block { margin-bottom: 40px; }
+        .model-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; color: #34495e; }
+        img { max-width: 600px; border: 1px solid #ccc; display: block; margin-top: 10px; }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #ecf0f1;
+        }
+
+        .metric-block p {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ultrasound Classification Report</h1>
+
+    <div class="block">
+        <div class="model-title">Test Set Performance</div>
+        <div class="metric-block">
+            <p><strong>Accuracy:</strong> 0.9833</p>
+            <p><strong>Precision:</strong> 0.9848</p>
+            <p><strong>Recall:</strong> 0.9833</p>
+            <p><strong>F1 Score:</strong> 0.9833</p>
+        </div>
+        <img src="cnn_confusion_matrix.jpg" alt="Confusion Matrix">
+    </div>
+
+    <div class="block">
+        <div class="model-title">Learning Curves</div>
+        <img src="leraning_curve.jpg" alt="Learning Curves">
+    </div>
+
+    <div class="block">
+        <div class="model-title">Training History (per Epoch)</div>
+        <table>
+            <tr>
+                <th>Epoch</th>
+                <th>Train Loss</th>
+                <th>Train Acc</th>
+                <th>Val Loss</th>
+                <th>Val Acc</th>
+            </tr>
+            <tr><td>1</td><td>0.8619</td><td>0.7542</td><td>1.8493</td><td>0.1667</td></tr>
+            <tr><td>2</td><td>0.0475</td><td>0.9875</td><td>0.4548</td><td>0.9000</td></tr>
+            <tr><td>3</td><td>0.0044</td><td>1.0000</td><td>0.0810</td><td>0.9833</td></tr>
+            <tr><td>4</td><td>0.0040</td><td>1.0000</td><td>0.0469</td><td>0.9833</td></tr>
+            <tr><td>5</td><td>0.0062</td><td>0.9958</td><td>0.0437</td><td>0.9833</td></tr>
+            <tr><td>6</td><td>0.0083</td><td>0.9958</td><td>0.0629</td><td>0.9833</td></tr>
+            <tr><td>7</td><td>0.0020</td><td>1.0000</td><td>0.0029</td><td>1.0000</td></tr>
+            <tr><td>8</td><td>0.0016</td><td>1.0000</td><td>0.0047</td><td>1.0000</td></tr>
+            <tr><td>9</td><td>0.0007</td><td>1.0000</td><td>0.0112</td><td>1.0000</td></tr>
+            <tr><td>10</td><td>0.0002</td><td>1.0000</td><td>0.0143</td><td>1.0000</td></tr>
+            <tr><td>11</td><td>0.0010</td><td>1.0000</td><td>0.0137</td><td>1.0000</td></tr>
+            <tr><td>12</td><td>0.0006</td><td>1.0000</td><td>0.0213</td><td>0.9833</td></tr>
+            <tr><td>13</td><td>0.0004</td><td>1.0000</td><td>0.0234</td><td>0.9833</td></tr>
+            <tr><td>14</td><td>0.0002</td><td>1.0000</td><td>0.0222</td><td>0.9833</td></tr>
+            <tr><td>15</td><td>0.0003</td><td>1.0000</td><td>0.0211</td><td>0.9833</td></tr>
+        </table>
+    </div>
+</body>
+</html>
