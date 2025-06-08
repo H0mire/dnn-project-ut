@@ -19,107 +19,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-class HandcraftedFeatureExtractor:
-    """Extract traditional image processing features from ultrasound images"""
-    
-    def __init__(self):
-        self.feature_names = []
-        
-    def extract_texture_features(self, image):
-        """Extract GLCM texture features"""
-        # Convert to grayscale if needed
-        if len(image.shape) == 3:
-            gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        else:
-            gray = image
-            
-        # Normalize to 0-255 range
-        gray = (gray * 255).astype(np.uint8)
-        
-        # Calculate GLCM
-        distances = [1, 3, 5]
-        angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]
-        
-        glcm = graycomatrix(gray, distances=distances, angles=angles, 
-                           levels=256, symmetric=True, normed=True)
-        
-        # Extract properties
-        properties = ['contrast', 'dissimilarity', 'homogeneity', 'energy', 'correlation']
-        features = []
-        
-        for prop in properties:
-            prop_values = graycoprops(glcm, prop)
-            features.extend(prop_values.flatten())
-            
-        return np.array(features)
-    
-    def extract_intensity_features(self, image):
-        """Extract intensity-based features"""
-        if len(image.shape) == 3:
-            gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        else:
-            gray = image
-            
-        features = [
-            np.mean(gray),
-            np.std(gray),
-            np.median(gray),
-            np.percentile(gray, 25),
-            np.percentile(gray, 75),
-            gray.max(),
-            gray.min()
-        ]
-        
-        # Histogram features
-        hist, _ = np.histogram(gray, bins=16, range=(0, 1))
-        hist = hist.astype(float) / hist.sum()
-        features.extend(hist)
-        
-        return np.array(features)
-    
-    def extract_shape_features(self, image):
-        """Extract shape and region-based features"""
-        if len(image.shape) == 3:
-            gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        else:
-            gray = image
-            
-        # Apply edge detection
-        edges = sobel(gray)
-        
-        # Threshold to get binary image
-        threshold = np.mean(edges) + np.std(edges)
-        binary = edges > threshold
-        
-        # Label regions
-        labeled = label(binary)
-        
-        # Get region properties
-        props = regionprops_table(labeled, properties=['area', 'eccentricity', 
-                                                       'solidity', 'extent'])
-        
-        if len(props['area']) > 0:
-            features = [
-                np.mean(props['area']),
-                np.std(props['area']) if len(props['area']) > 1 else 0,
-                np.mean(props['eccentricity']),
-                np.mean(props['solidity']),
-                np.mean(props['extent'])
-            ]
-        else:
-            features = [0, 0, 0, 0, 0]
-            
-        return np.array(features)
-    
-    def extract_all_features(self, image):
-        """Extract all features from an image"""
-        texture_features = self.extract_texture_features(image)
-        intensity_features = self.extract_intensity_features(image)
-        shape_features = self.extract_shape_features(image)
-        
-        return np.concatenate([texture_features, intensity_features, shape_features])
-
-
 class UltrasoundDataset(Dataset):
     """Custom dataset for ultrasound images with augmentation"""
     
@@ -205,51 +104,6 @@ class ShallowCNN(nn.Module):
         """Extract features from the last conv layer"""
         x = self.features(x)
         return x.view(x.size(0), -1)
-
-
-class HybridClassifier:
-    """Combines handcrafted features with CNN features"""
-    
-    def __init__(self, input_size=128, hidden_size=64, num_classes=2):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.cnn = ShallowCNN(num_classes).to(self.device)
-        self.feature_extractor = HandcraftedFeatureExtractor()
-        self.scaler = StandardScaler()
-        
-        # MLP for combining features
-        self.hybrid_mlp = nn.Sequential(
-            nn.Linear(1024 + 287, hidden_size),  # CNN features + handcrafted features
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(hidden_size, num_classes)
-        ).to(self.device)
-        
-    def extract_hybrid_features(self, images, paths=None):
-        """Extract both CNN and handcrafted features"""
-        cnn_features = []
-        handcrafted_features = []
-        
-        # Extract CNN features
-        self.cnn.eval()
-        with torch.no_grad():
-            for img in images:
-                if isinstance(img, torch.Tensor):
-                    img_tensor = img.unsqueeze(0).to(self.device)
-                else:
-                    img_tensor = torch.from_numpy(img).unsqueeze(0).to(self.device)
-                features = self.cnn.get_features(img_tensor)
-                cnn_features.append(features.cpu().numpy().flatten())
-        
-        # Extract handcrafted features
-        if paths:
-            for path in paths:
-                img = cv2.imread(path)
-                img = cv2.resize(img, (128, 128))
-                img = img.astype(np.float32) / 255.0
-                features = self.feature_extractor.extract_all_features(img)
-                handcrafted_features.append(features)
-        
-        return np.array(cnn_features), np.array(handcrafted_features)
 
 
 def load_data(data_dir, classes=['bladder', 'kidney']):
@@ -487,9 +341,6 @@ def main():
     sample_image = cv2.imread(sample_image_path)
     sample_image = cv2.resize(sample_image, (128, 128))
     sample_image = sample_image.astype(np.float32) / 255.0
-    
-    features = feature_extractor.extract_all_features(sample_image)
-    print(f"Number of handcrafted features: {len(features)}")
     
     print("\nTraining complete!")
 
